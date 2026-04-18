@@ -1,4 +1,4 @@
-name: Model ML CI/CD
+name: Model ML CI
 
 #Definicja zdarzeń, które uruchamiają workflow
 on:
@@ -7,48 +7,28 @@ on:
   pull_request:
     branches: [ "main" ]
 
-#Uprawnienia potrzebne do zapisu obrazu w GitHub Container Registry
-permissions:
-  contents: read
-  packages: write
-
 jobs:
-  test:
+  build_and_test:
+    #Wybór środowiska
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      #Instalacja zależności z pliku requirements.txt
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      #Uruchomienie testów jednostkowych
-      - name: Run tests
-        run: pytest test_model.py
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-  build-and-push-docker:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    #Konfiguracja Pythona
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    #Instalacja zależności z pliku requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          #Nazwa obrazu identyczna do nazwy repozytorium
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+    #Uruchomienie testów jednostkowych
+    - name: Run tests
+      run: |
+        pytest test_model.py
