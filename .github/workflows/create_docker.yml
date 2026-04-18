@@ -1,4 +1,4 @@
-name: Model ML CI/CD
+name: Zbudowanie obrazu
 
 #Definicja zdarzeń, które uruchamiają workflow
 on:
