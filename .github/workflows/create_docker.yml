@@ -1,0 +1,34 @@
+name: Model ML CI/CD
+
+#Definicja zdarzeń, które uruchamiają workflow
+on:
+  push:
+    branches: [ "main" ]
+
+#Uprawnienia potrzebne do zapisu obrazu w GitHub Container Registry
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          #Nazwa obrazu identyczna do nazwy repozytorium
+          tags: |
+            ghcr.io/margregr/ntpd06:latest
