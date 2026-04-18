@@ -9,6 +9,3 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 #Kopiowanie reszty plików projektu
 COPY . .
-
-#Polecenie ruchamiające testy przy starcie kontenera
-CMD ["pytest", "test_model.py"]
