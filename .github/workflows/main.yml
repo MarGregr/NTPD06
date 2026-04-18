@@ -1,4 +1,4 @@
-name: Model ML CI
+name: Testy jednostkowe
 
 #Definicja zdarzeń, które uruchamiają workflow
 on:
